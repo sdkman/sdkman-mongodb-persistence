@@ -18,10 +18,9 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
       val platform = "LINUX_64"
       val url = "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz"
 
-      saveVersion(Version(candidate, version, platform, url))
-
-      whenReady(versionPublished(candidate, version, url, platform)) { published =>
-        published shouldBe true
+      whenReady(saveVersion(Version(candidate, version, platform, url))) { completed =>
+        completed.toString shouldBe "The operation completed successfully"
+        versionPublished(candidate, version, url, platform) shouldBe true
       }
     }
 

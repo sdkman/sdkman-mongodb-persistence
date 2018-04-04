@@ -70,12 +70,12 @@ object Mongo {
       .toFuture()
       .map(_.nonEmpty), 5.seconds)
 
-  def versionPublished(candidate: String, version: String, url: String, platform: String): Future[Boolean] =
+  def versionPublished(candidate: String, version: String, url: String, platform: String): Boolean = Await.result(
     versionsCollection
       .find(and(equal("candidate", candidate), equal("version", version), equal("platform", platform)))
       .first
       .headOption()
-      .map(_.nonEmpty)
+      .map(_.nonEmpty), 5.seconds)
 }
 
 object Helpers {
