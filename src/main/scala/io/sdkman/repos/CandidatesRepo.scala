@@ -16,7 +16,7 @@ trait CandidatesRepo {
 
   import repos.mongoExecutionContext
 
-  def findByIdentifier(candidate: String): Future[Option[Candidate]] =
+  def findCandidate(candidate: String): Future[Option[Candidate]] =
     candidatesCollection
       .find(equal("candidate", candidate))
       .first

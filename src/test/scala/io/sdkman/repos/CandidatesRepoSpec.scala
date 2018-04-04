@@ -35,7 +35,7 @@ class CandidatesRepoSpec extends WordSpec with Matchers with BeforeAndAfter with
 
     "find some single candidate when searching by know candidate identifier" in new TestRepo {
       val candidate = "java"
-      whenReady(findByIdentifier(candidate)) { maybeCandidate =>
+      whenReady(findCandidate(candidate)) { maybeCandidate =>
         maybeCandidate shouldBe defined
         maybeCandidate.foreach(_.candidate shouldBe candidate)
       }
@@ -43,7 +43,7 @@ class CandidatesRepoSpec extends WordSpec with Matchers with BeforeAndAfter with
 
     "find none when searching by unknown candidate identifier" in new TestRepo {
       val candidate = "scoobeedoo"
-      whenReady(findByIdentifier(candidate)) { maybeCandidate =>
+      whenReady(findCandidate(candidate)) { maybeCandidate =>
         maybeCandidate shouldNot be(defined)
       }
     }
