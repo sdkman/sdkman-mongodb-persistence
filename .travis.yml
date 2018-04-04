@@ -11,7 +11,7 @@ scala:
 before_install:
   - docker run --rm -d -p "27017:27017" --name mongo mongo:3.2
 script:
-  - ./sbt clean test "+ publish with-defaults"
+  - ./sbt clean test
 
 after_success:
   - docker rm -f mongo
