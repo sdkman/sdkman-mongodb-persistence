@@ -13,6 +13,13 @@ package object repos {
 
   val MissingField = "MISSING_FIELD"
 
+  implicit def versionToDocument(v: Version): Document =
+    Document(
+      "candidate" -> v.candidate,
+      "version" -> v.version,
+      "platform" -> v.platform,
+      "url" -> v.url)
+
   implicit def documentToCandidate(doc: Document): Candidate =
     Candidate(
       field("candidate", doc),

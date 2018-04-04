@@ -7,9 +7,8 @@ import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.model.Filters.{and, equal}
 import org.mongodb.scala._
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Mongo {
@@ -71,6 +70,12 @@ object Mongo {
       .toFuture()
       .map(_.nonEmpty), 5.seconds)
 
+  def versionPublished(candidate: String, version: String, url: String, platform: String): Future[Boolean] =
+    versionsCollection
+      .find(and(equal("candidate", candidate), equal("version", version), equal("platform", platform)))
+      .first
+      .headOption()
+      .map(_.nonEmpty)
 }
 
 object Helpers {

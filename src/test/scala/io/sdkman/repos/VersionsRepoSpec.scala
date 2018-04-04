@@ -5,10 +5,25 @@ import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfter, Matchers, OptionValues, WordSpec}
 import support.Mongo
+import support.Mongo.versionPublished
 
 class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
 
   "versions repository" should {
+
+    "persist a version" in new TestRepo {
+
+      val candidate = "java"
+      val version = "8u111"
+      val platform = "LINUX_64"
+      val url = "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz"
+
+      saveVersion(Version(candidate, version, platform, url))
+
+      whenReady(versionPublished(candidate, version, url, platform)) { published =>
+        published shouldBe true
+      }
+    }
 
     "attempt to find one Version by candidate, version and platform" when {
 
@@ -60,4 +75,5 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
   private trait TestRepo extends VersionsRepo with MongoConnectivity with MongoConfiguration {
     override val config: Config = ConfigFactory.load()
   }
+
 }

@@ -2,9 +2,9 @@ package io.sdkman.repos
 
 import io.sdkman.db.MongoConnectivity
 import io.sdkman.repos
-import org.mongodb.scala.ScalaObservable
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Sorts.ascending
+import org.mongodb.scala.{Completed, ScalaObservable}
 
 import scala.concurrent.Future
 
@@ -13,6 +13,8 @@ trait VersionsRepo {
   self: MongoConnectivity =>
 
   import repos.mongoExecutionContext
+
+  def saveVersion(v: Version): Future[Completed] = versionsCollection.insertOne(v).head()
 
   def findAllVersions(candidate: String, platform: String): Future[Seq[Version]] =
     versionsCollection
