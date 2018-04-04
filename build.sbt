@@ -1,7 +1,5 @@
 name := "sdkman-mongodb-persistence"
 
-version := "0.2"
-
 organization := "io.sdkman"
 
 scalaVersion := "2.12.5"
