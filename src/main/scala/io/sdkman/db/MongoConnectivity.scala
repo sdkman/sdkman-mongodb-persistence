@@ -21,7 +21,7 @@ trait MongoConnectivity {
 
   lazy val mongoClient = if (userName.isEmpty) MongoClient(mongoUrl) else MongoClient(clientSettings)
 
-  def db = mongoClient.getDatabase("sdkman")
+  def db = mongoClient.getDatabase(databaseName)
 
   def appCollection = db.getCollection("application")
 
