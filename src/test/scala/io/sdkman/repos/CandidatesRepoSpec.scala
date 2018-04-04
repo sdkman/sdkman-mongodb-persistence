@@ -1,7 +1,7 @@
 package io.sdkman.repos
 
 import com.typesafe.config.ConfigFactory
-import io.sdkman.db.MongoConnectivity
+import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfter, Matchers, WordSpec}
 import support.Mongo
@@ -53,7 +53,7 @@ class CandidatesRepoSpec extends WordSpec with Matchers with BeforeAndAfter with
     Mongo.insertCandidates(Seq(scala, groovy, java))
   }
 
-  sealed trait TestRepo extends CandidatesRepo with MongoConnectivity {
+  private trait TestRepo extends CandidatesRepo with MongoConnectivity with MongoConfiguration {
     override val config = ConfigFactory.load()
   }
 }
