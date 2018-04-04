@@ -6,12 +6,12 @@ services:
 language: scala
 
 scala:
-  - 2.11.8
+  - 2.12.5
 
 before_install:
   - docker run --rm -d -p "27017:27017" --name mongo mongo:3.2
 script:
-  - ./sbt test
+  - ./sbt test "+ publish"
 
 after_success:
   - docker rm -f mongo
