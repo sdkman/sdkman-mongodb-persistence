@@ -4,10 +4,13 @@ import java.util.concurrent.TimeUnit
 
 import io.sdkman.repos.{Application, Candidate, Version}
 import org.mongodb.scala.bson.collection.immutable.Document
-import org.mongodb.scala.{MongoClient, ScalaObservable, _}
+import org.mongodb.scala.model.Filters.{and, equal}
+import org.mongodb.scala._
 
 import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Mongo {
 
@@ -60,6 +63,14 @@ object Mongo {
     versionsCollection.drop().results()
     candidatesCollection.drop().results()
   }
+
+  def isDefault(candidate: String, version: String): Boolean = Await.result(
+    candidatesCollection
+      .find(and(equal("candidate", candidate), equal("default", version)))
+      .first
+      .toFuture()
+      .map(_.nonEmpty), 5.seconds)
+
 }
 
 object Helpers {
