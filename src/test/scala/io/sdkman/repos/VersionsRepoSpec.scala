@@ -50,7 +50,7 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
       }
     }
 
-    "find all versions by candidate and platform ordered by version" in new TestRepo {
+    "attempt to find all versions by candidate and platform ordered by version" in new TestRepo {
       val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz")
       val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz")
       val java8u131 = Version("java", "8u131", "LINUX_64", "http://dl/8u131-b14/jdk-8u131-linux-x64.tar.gz")
@@ -59,11 +59,29 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
 
       javaVersions.foreach(Mongo.insertVersion)
 
-      whenReady(findAllVersions("java", "LINUX_64")) { versions =>
+      whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
         versions.size shouldBe 3
         versions(0) shouldBe java8u111
         versions(1) shouldBe java8u121
         versions(2) shouldBe java8u131
+      }
+    }
+
+    "attempt to find all Versions by candidate and version" when {
+
+      "more than one version platform is available" in new TestRepo {
+
+        val candidate = "java"
+        val version = "8u111"
+        val url = "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz"
+
+        Mongo.insertVersion(Version(candidate, version, "LINUX_64", url))
+        Mongo.insertVersion(Version(candidate, version, "MAC_OSX", url))
+
+        whenReady(findAllVersionsByCandidateVersion(candidate, version)) { versions =>
+          versions shouldBe 'nonEmpty
+          versions.size shouldBe 2
+        }
       }
     }
   }

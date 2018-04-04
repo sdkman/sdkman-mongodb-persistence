@@ -16,10 +16,16 @@ trait VersionsRepo {
 
   def saveVersion(v: Version): Future[Completed] = versionsCollection.insertOne(v).head()
 
-  def findAllVersions(candidate: String, platform: String): Future[Seq[Version]] =
+  def findAllVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
     versionsCollection
       .find(and(equal("candidate", candidate), equal("platform", platform)))
       .sort(ascending("version"))
+      .map(doc => doc: Version)
+      .toFuture()
+
+  def findAllVersionsByCandidateVersion(candidate: String, version: String): Future[Seq[Version]] =
+    versionsCollection
+      .find(and(equal("candidate", candidate), equal("version", version)))
       .map(doc => doc: Version)
       .toFuture()
 
