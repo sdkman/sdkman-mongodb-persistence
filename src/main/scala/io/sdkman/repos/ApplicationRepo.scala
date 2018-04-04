@@ -5,7 +5,7 @@ import io.sdkman.repos
 
 import scala.concurrent.Future
 
-class ApplicationRepo {
+trait ApplicationRepo {
 
   self: MongoConnectivity =>
 
