@@ -2,6 +2,13 @@
 
 This project is a library used for persistence to MongoDB by all SDKMAN backend services.
 
+This library is used in the following SDKMAN services:
+
+* sdkman-website
+* sdkman-candidates
+* sdkman-hooks
+* vendor-release
+
 ### Run tests
 
     $ ./sbt test
