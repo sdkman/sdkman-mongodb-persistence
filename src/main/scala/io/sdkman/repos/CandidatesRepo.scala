@@ -40,6 +40,6 @@ trait CandidatesRepo {
 case class Candidate(candidate: String,
                      name: String,
                      description: String,
-                     default: String,
+                     default: Option[String],
                      websiteUrl: String,
                      distribution: String)

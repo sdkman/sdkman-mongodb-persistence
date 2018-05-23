@@ -25,7 +25,7 @@ package object repos {
       field("candidate", doc),
       field("name", doc),
       field("description", doc),
-      field("default", doc),
+      optionalField("default", doc),
       field("websiteUrl", doc),
       field("distribution", doc))
 
@@ -44,5 +44,9 @@ package object repos {
 
   private def field(n: String, d: Document): String =
     d.get[BsonString](n).map(_.asString.getValue).getOrElse(MissingField)
+
+  private def optionalField(n: String, d: Document): Option[String] =
+    d.get[BsonString](n).map(_.asString.getValue)
+
 }
 

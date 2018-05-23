@@ -46,16 +46,24 @@ object Mongo {
 
   def insertCandidates(cs: Seq[Candidate]) = cs.foreach(insertCandidate)
 
-  def insertCandidate(c: Candidate) =
+  def insertCandidate(c: Candidate) = c.default.fold {
     candidatesCollection.insertOne(
       Document(
         "candidate" -> c.candidate,
         "name" -> c.name,
         "description" -> c.description,
-        "default" -> c.default,
         "websiteUrl" -> c.websiteUrl,
         "distribution" -> c.distribution))
-      .results()
+  } { default =>
+    candidatesCollection.insertOne(
+      Document(
+        "candidate" -> c.candidate,
+        "name" -> c.name,
+        "description" -> c.description,
+        "default" -> default,
+        "websiteUrl" -> c.websiteUrl,
+        "distribution" -> c.distribution))
+  }.results()
 
   def dropAllCollections() = {
     appCollection.drop().results()
