@@ -21,6 +21,10 @@ object Mongo {
 
   lazy val appCollection = db.getCollection("application")
 
+  lazy val versionsCollection = db.getCollection("versions")
+
+  lazy val candidatesCollection = db.getCollection("candidates")
+
   def insertApplication(app: Application) =
     appCollection.insertOne(
       Document(
@@ -28,10 +32,6 @@ object Mongo {
         "stableCliVersion" -> app.stableCliVersion,
         "betaCliVersion" -> app.betaCliVersion))
       .results()
-
-  lazy val versionsCollection = db.getCollection("versions")
-
-  lazy val candidatesCollection = db.getCollection("candidates")
 
   def insertVersions(vs: Seq[Version]) = vs.foreach(insertVersion)
 
