@@ -35,6 +35,9 @@ trait CandidatesRepo {
     candidatesCollection
       .updateOne(equal("candidate", candidate), set("default", version))
       .head()
+
+  def insertCandidate(candidate: Candidate): Future[Completed] =
+    candidatesCollection.insertOne(candidate).toFuture()
 }
 
 case class Candidate(candidate: String,

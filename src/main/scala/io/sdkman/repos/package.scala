@@ -20,6 +20,24 @@ package object repos {
       "platform" -> v.platform,
       "url" -> v.url)
 
+  implicit def candidateToDocument(c: Candidate): Document =
+    c.default.fold {
+      Document(
+        "candidate" -> c.candidate,
+        "name" -> c.name,
+        "description" -> c.description,
+        "websiteUrl" -> c.websiteUrl,
+        "distribution" -> c.distribution)
+    } { default =>
+      Document(
+        "candidate" -> c.candidate,
+        "name" -> c.name,
+        "description" -> c.description,
+        "default" -> default,
+        "websiteUrl" -> c.websiteUrl,
+        "distribution" -> c.distribution)
+    }
+
   implicit def documentToCandidate(doc: Document): Candidate =
     Candidate(
       field("candidate", doc),

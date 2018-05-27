@@ -5,7 +5,7 @@ import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfter, Matchers, OptionValues, WordSpec}
 import support.Mongo
-import support.Mongo.isDefault
+import support.Mongo._
 
 class CandidatesRepoSpec extends WordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
 
@@ -57,17 +57,29 @@ class CandidatesRepoSpec extends WordSpec with Matchers with BeforeAndAfter with
       }
     }
 
-    "accommodate a candidate with default version" in new TestRepo {
+    "find a candidate with default version" in new TestRepo {
       val candidate = "scala"
       whenReady(findCandidate(candidate)) { maybeCandidate =>
         maybeCandidate.value.default.value shouldBe "2.12.0"
       }
     }
 
-    "accommodate a candidate with no default version" in new TestRepo {
+    "find a candidate with no default version" in new TestRepo {
       val candidate = "micronaut"
       whenReady(findCandidate(candidate)) { maybeCandidate =>
         maybeCandidate.value.default shouldBe None
+      }
+    }
+
+    "insert a candidate with default version" in new TestRepo {
+      whenReady(insertCandidate(scala)) { _ =>
+        hasDefault("scala") shouldBe true
+      }
+    }
+
+    "insert a candidate with no default version" in new TestRepo {
+      whenReady(insertCandidate(micronaut)) { _ =>
+        hasDefault("micronaut") shouldBe false
       }
     }
   }
@@ -80,4 +92,5 @@ class CandidatesRepoSpec extends WordSpec with Matchers with BeforeAndAfter with
   private trait TestRepo extends CandidatesRepo with MongoConnectivity with MongoConfiguration {
     override val config = ConfigFactory.load()
   }
+
 }

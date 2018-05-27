@@ -78,6 +78,11 @@ object Mongo {
       .toFuture()
       .map(_.nonEmpty), 5.seconds)
 
+  def hasDefault(candidate: String): Boolean = Await.result(
+    candidatesCollection.find(equal("candidate", candidate)).first.toFuture,
+    5.seconds
+  ).get("default").isDefined
+
   def versionPublished(candidate: String, version: String, url: String, platform: String): Boolean = Await.result(
     versionsCollection
       .find(and(equal("candidate", candidate), equal("version", version), equal("platform", platform)))
