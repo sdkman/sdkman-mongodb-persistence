@@ -11,7 +11,7 @@ parallelExecution in Test := false
 resolvers += Resolver.jcenterRepo
 
 libraryDependencies ++= Seq(
-  "org.mongodb.scala" %% "mongo-scala-driver" % "2.2.1",
+  "org.mongodb.scala" %% "mongo-scala-driver" % "2.4.2",
   "com.typesafe" % "config" % "1.3.1",
   "org.scalatest" %% "scalatest" % "3.0.5" % Test
 )

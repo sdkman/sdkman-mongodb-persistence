@@ -1,8 +1,8 @@
 package io.sdkman.db
 
-import com.mongodb.ConnectionString
-import org.mongodb.scala.connection.ClusterSettings
-import org.mongodb.scala.{MongoClient, MongoClientSettings, MongoCredential}
+import org.mongodb.scala.{MongoClient, MongoClientSettings, MongoCredential, ServerAddress}
+
+import scala.collection.JavaConverters._
 
 trait MongoConnectivity {
 
@@ -10,16 +10,12 @@ trait MongoConnectivity {
 
   def credential = MongoCredential.createCredential(userName, databaseName, password.toCharArray)
 
-  lazy val clusterSettings = ClusterSettings.builder()
-    .applyConnectionString(new ConnectionString(mongoUrl))
-    .build()
-
   lazy val clientSettings = MongoClientSettings.builder()
     .credential(credential)
-    .clusterSettings(clusterSettings)
+    .applyToClusterSettings(b => b.hosts(List(ServerAddress(mongoUrl)).asJava))
     .build()
 
-  lazy val mongoClient = if (userName.isEmpty) MongoClient(mongoUrl) else MongoClient(clientSettings)
+  lazy val mongoClient: MongoClient = if (userName.isEmpty) MongoClient(mongoUrl) else MongoClient(clientSettings)
 
   def db = mongoClient.getDatabase(databaseName)
 
