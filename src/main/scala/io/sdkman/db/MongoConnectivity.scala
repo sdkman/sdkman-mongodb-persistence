@@ -12,6 +12,7 @@ trait MongoConnectivity {
 
   lazy val clientSettings = MongoClientSettings.builder()
     .applyConnectionString(remoteConnectionString)
+    .codecRegistry(MongoClient.DEFAULT_CODEC_REGISTRY)
     .build()
 
   lazy val localConnectionString = s"mongodb://localhost:27017/$databaseName"
