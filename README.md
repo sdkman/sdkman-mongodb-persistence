@@ -9,6 +9,10 @@ This library is used in the following SDKMAN services:
 * sdkman-hooks
 * vendor-release
 
+### Set Bintray credentials in sbt
+
+    $ ./sbt bintrayChangeCredentials
+
 ### Run tests
 
     $ ./sbt test
