@@ -6,7 +6,9 @@ trait MongoConfiguration {
 
   def config: Config
 
-  lazy val mongoUrl = config.getString("mongo.url")
+  lazy val mongoHost = config.getString("mongo.url.host")
+
+  lazy val mongoPort = config.getString("mongo.url.port")
 
   lazy val userName = config.getString("mongo.username")
 
