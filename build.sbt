@@ -10,14 +10,15 @@ parallelExecution in Test := false
 
 resolvers += Resolver.jcenterRepo
 
+bintrayOrganization := Some("sdkman")
+
+bintrayRepository := "maven"
+
+bintrayReleaseOnPublish in ThisBuild := true
+
 libraryDependencies ++= Seq(
   "org.mongodb.scala" %% "mongo-scala-driver" % "2.4.2",
   "com.typesafe" % "config" % "1.3.1",
-  "org.scalatest" %% "scalatest" % "3.0.5" % Test
-)
-
-bintrayOrganization := Some("sdkman")
-
-bintrayReleaseOnPublish in ThisBuild := true
+  "org.scalatest" %% "scalatest" % "3.0.5" % Test)
 
 licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
