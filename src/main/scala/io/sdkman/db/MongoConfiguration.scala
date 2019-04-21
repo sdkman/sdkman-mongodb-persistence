@@ -8,7 +8,7 @@ trait MongoConfiguration {
 
   lazy val mongoHost = config.getString("mongo.url.host")
 
-  lazy val mongoPort = config.getString("mongo.url.port")
+  lazy val mongoPort = config.getInt("mongo.url.port")
 
   lazy val userName = config.getString("mongo.username")
 
