@@ -14,65 +14,33 @@ import scala.concurrent.duration._
 object Mongo {
 
   import Helpers._
+  import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
+  import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
+  import org.mongodb.scala.bson.codecs.Macros._
+
+  val codecRegistry =
+    fromRegistries(fromProviders(classOf[Version], classOf[Candidate], classOf[Application]),
+      DEFAULT_CODEC_REGISTRY)
 
   lazy val mongoClient = MongoClient("mongodb://localhost:27017")
 
-  lazy val db = mongoClient.getDatabase("sdkman")
+  lazy val db = mongoClient.getDatabase("sdkman").withCodecRegistry(codecRegistry)
 
-  lazy val appCollection = db.getCollection("application")
+  lazy val appCollection: MongoCollection[Application] = db.getCollection("application")
 
-  lazy val versionsCollection = db.getCollection("versions")
+  lazy val versionsCollection: MongoCollection[Version] = db.getCollection("versions")
 
-  lazy val candidatesCollection = db.getCollection("candidates")
+  lazy val candidatesCollection: MongoCollection[Candidate] = db.getCollection("candidates")
 
-  def insertApplication(app: Application) =
-    appCollection.insertOne(
-      Document(
-        "alive" -> app.alive,
-        "stableCliVersion" -> app.stableCliVersion,
-        "betaCliVersion" -> app.betaCliVersion))
-      .results()
+  def insertApplication(app: Application) = appCollection.insertOne(app).results()
 
-  def insertVersions(vs: Seq[Version]) = vs.foreach(insertVersion)
+  def insertVersions(vs: Seq[Version]) = versionsCollection.insertMany(vs).results()
 
-  def insertVersion(v: Version) =
-    versionsCollection.insertOne(
-      v.vendor.fold(documentWithoutVendor(v))(vendor =>
-        documentWithVendor(v, vendor))).results()
+  def insertVersion(v: Version) = versionsCollection.insertOne(v).results()
 
-  private def documentWithoutVendor(v: Version) = Document(
-    "candidate" -> v.candidate,
-    "version" -> v.version,
-    "platform" -> v.platform,
-    "url" -> v.url)
+  def insertCandidates(cs: Seq[Candidate]) = candidatesCollection.insertMany(cs).results()
 
-  private def documentWithVendor(v: Version, vendor: String) = Document(
-    "candidate" -> v.candidate,
-    "version" -> v.version,
-    "platform" -> v.platform,
-    "url" -> v.url,
-    "vendor" -> vendor)
-
-  def insertCandidates(cs: Seq[Candidate]) = cs.foreach(insertCandidate)
-
-  def insertCandidate(c: Candidate) = c.default.fold {
-    candidatesCollection.insertOne(
-      Document(
-        "candidate" -> c.candidate,
-        "name" -> c.name,
-        "description" -> c.description,
-        "websiteUrl" -> c.websiteUrl,
-        "distribution" -> c.distribution))
-  } { default =>
-    candidatesCollection.insertOne(
-      Document(
-        "candidate" -> c.candidate,
-        "name" -> c.name,
-        "description" -> c.description,
-        "default" -> default,
-        "websiteUrl" -> c.websiteUrl,
-        "distribution" -> c.distribution))
-  }.results()
+  def insertCandidate(c: Candidate) = candidatesCollection.insertOne(c).results()
 
   def dropAllCollections() = {
     appCollection.drop().results()
@@ -103,16 +71,16 @@ object Mongo {
 object Helpers {
 
   implicit class DocumentObservable[C](val observable: Observable[Document]) extends ImplicitObservable[Document] {
-    override val converter: (Document) => String = (doc) => doc.toJson
+    override val converter: Document => String = doc => doc.toJson
   }
 
   implicit class GenericObservable[C](val observable: Observable[C]) extends ImplicitObservable[C] {
-    override val converter: (C) => String = (doc) => doc.toString
+    override val converter: C => String = doc => doc.toString
   }
 
   trait ImplicitObservable[C] {
     val observable: Observable[C]
-    val converter: (C) => String
+    val converter: C => String
 
     def results(): Seq[C] = Await.result(observable.toFuture(), Duration(10, TimeUnit.SECONDS))
 
