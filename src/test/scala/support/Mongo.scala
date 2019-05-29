@@ -18,9 +18,12 @@ object Mongo {
   import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
   import org.mongodb.scala.bson.codecs.Macros._
 
-  val codecRegistry =
-    fromRegistries(fromProviders(classOf[Version], classOf[Candidate], classOf[Application]),
-      DEFAULT_CODEC_REGISTRY)
+  val codecRegistry = fromRegistries(
+    fromProviders(
+      classOf[Version],
+      classOf[Candidate],
+      classOf[Application]),
+    DEFAULT_CODEC_REGISTRY)
 
   lazy val mongoClient = MongoClient("mongodb://localhost:27017")
 
@@ -51,14 +54,14 @@ object Mongo {
   def isDefault(candidate: String, version: String): Boolean = Await.result(
     candidatesCollection
       .find(and(equal("candidate", candidate), equal("default", version)))
-      .first
-      .toFuture()
+      .headOption()
       .map(_.nonEmpty), 5.seconds)
 
   def hasDefault(candidate: String): Boolean = Await.result(
-    candidatesCollection.find(equal("candidate", candidate)).first.toFuture,
-    5.seconds
-  ).get("default").isDefined
+    candidatesCollection
+      .find(equal("candidate", candidate))
+      .first
+      .toFuture, 5.seconds).default.nonEmpty
 
   def versionPublished(candidate: String, version: String, url: String, platform: String): Boolean = Await.result(
     versionsCollection

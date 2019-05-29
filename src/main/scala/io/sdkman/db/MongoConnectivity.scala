@@ -1,7 +1,11 @@
 package io.sdkman.db
 
 import com.mongodb.{ConnectionString, MongoClientSettings}
-import org.mongodb.scala.MongoClient
+import io.sdkman.repos.{Application, Candidate, Version}
+import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
+import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
+import org.mongodb.scala.bson.codecs.Macros._
+import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
 
 trait MongoConnectivity {
 
@@ -22,11 +26,16 @@ trait MongoConnectivity {
       MongoClient(localConnectionString)
     else MongoClient(clientSettings)
 
-  def db = mongoClient.getDatabase(databaseName)
+  val codecRegistry = fromRegistries(
+    fromProviders(classOf[Version], classOf[Candidate], classOf[Application]),
+    DEFAULT_CODEC_REGISTRY)
 
-  def appCollection = db.getCollection("application")
+  def db: MongoDatabase = mongoClient.getDatabase(databaseName).withCodecRegistry(codecRegistry)
 
-  def versionsCollection = db.getCollection("versions")
+  def appCollection: MongoCollection[Application] = db.getCollection("application")
 
-  def candidatesCollection = db.getCollection("candidates")
+  def versionsCollection: MongoCollection[Version] = db.getCollection("versions")
+
+  def candidatesCollection: MongoCollection[Candidate] = db.getCollection("candidates")
+
 }
