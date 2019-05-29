@@ -66,6 +66,27 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
       }
     }
 
+    "read versions with optional vendor" when {
+
+      val candidate = "java"
+      val version = "8.0.131"
+      val platform = "LINUX_64"
+
+      "a vendor is present" in new TestRepo with OptionValues {
+        Mongo.insertVersion(Version(candidate, version, platform, "http://dl/8u131-b14/jdk-8u131-linux-x64.tar.gz", Some("amazon")))
+        whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
+          maybeVersion.value.vendor.value shouldBe "amazon"
+        }
+      }
+
+      "a vendor is not present" in new TestRepo {
+        Mongo.insertVersion(Version(candidate, version, platform, "http://dl/8u131-b14/jdk-8u131-linux-x64.tar.gz", None))
+        whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
+          maybeVersion.value.vendor should not be 'defined
+        }
+      }
+    }
+
     "attempt to find all Versions by candidate and version" when {
 
       "more than one version platform is available" in new TestRepo {

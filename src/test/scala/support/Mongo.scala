@@ -3,13 +3,13 @@ package support
 import java.util.concurrent.TimeUnit
 
 import io.sdkman.repos.{Application, Candidate, Version}
+import org.mongodb.scala._
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.model.Filters.{and, equal}
-import org.mongodb.scala._
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 object Mongo {
 
@@ -37,12 +37,21 @@ object Mongo {
 
   def insertVersion(v: Version) =
     versionsCollection.insertOne(
-      Document(
-        "candidate" -> v.candidate,
-        "version" -> v.version,
-        "platform" -> v.platform,
-        "url" -> v.url))
-      .results()
+      v.vendor.fold(documentWithoutVendor(v))(vendor =>
+        documentWithVendor(v, vendor))).results()
+
+  private def documentWithoutVendor(v: Version) = Document(
+    "candidate" -> v.candidate,
+    "version" -> v.version,
+    "platform" -> v.platform,
+    "url" -> v.url)
+
+  private def documentWithVendor(v: Version, vendor: String) = Document(
+    "candidate" -> v.candidate,
+    "version" -> v.version,
+    "platform" -> v.platform,
+    "url" -> v.url,
+    "vendor" -> vendor)
 
   def insertCandidates(cs: Seq[Candidate]) = cs.foreach(insertCandidate)
 

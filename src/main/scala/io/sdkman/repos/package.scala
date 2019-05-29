@@ -48,11 +48,20 @@ package object repos {
       field("distribution", doc))
 
   implicit def documentToVersion(doc: Document): Version =
-    Version(
-      field("candidate", doc),
-      field("version", doc),
-      field("platform", doc),
-      field("url", doc))
+    optionalField("vendor", doc).fold(
+      Version(
+        field("candidate", doc),
+        field("version", doc),
+        field("platform", doc),
+        field("url", doc),
+        None)) { vendor =>
+      Version(
+        field("candidate", doc),
+        field("version", doc),
+        field("platform", doc),
+        field("url", doc),
+        Some(vendor))
+    }
 
   implicit def documentToApplication(doc: Document): Application =
     Application(

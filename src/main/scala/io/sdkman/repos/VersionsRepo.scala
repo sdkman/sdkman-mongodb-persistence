@@ -38,4 +38,4 @@ trait VersionsRepo {
       .map(_.headOption)
 }
 
-case class Version(candidate: String, version: String, platform: String, url: String)
+case class Version(candidate: String, version: String, platform: String, url: String, vendor: Option[String] = None)
