@@ -27,7 +27,10 @@ trait MongoConnectivity {
     else MongoClient(clientSettings)
 
   val codecRegistry = fromRegistries(
-    fromProviders(classOf[Version], classOf[Candidate], classOf[Application]),
+    fromProviders(
+      createCodecProviderIgnoreNone[Version](),
+      createCodecProvider[Candidate](),
+      createCodecProvider[Application]()),
     DEFAULT_CODEC_REGISTRY)
 
   def db: MongoDatabase = mongoClient.getDatabase(databaseName).withCodecRegistry(codecRegistry)

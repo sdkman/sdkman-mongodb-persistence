@@ -20,9 +20,9 @@ object Mongo {
 
   val codecRegistry = fromRegistries(
     fromProviders(
-      classOf[Version],
-      classOf[Candidate],
-      classOf[Application]),
+      createCodecProviderIgnoreNone[Version],
+      createCodecProvider[Candidate],
+      createCodecProvider[Application]),
     DEFAULT_CODEC_REGISTRY)
 
   lazy val mongoClient = MongoClient("mongodb://localhost:27017")
