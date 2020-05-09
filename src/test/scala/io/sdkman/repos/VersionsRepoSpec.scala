@@ -66,6 +66,23 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
       }
     }
 
+    "attempt to find all versions by candidate and mixed platform ordered by version" in new TestRepo {
+      val mn2linux = Version("micronaut", "2.0.0", "LINUX_64", "http://dl/mn-2.0.0-linux.tar.gz")
+      val mn2darwin = Version("micronaut", "2.0.0", "MAC_OSX", "http://dl/mn-2.0.0-darwin.tar.gz")
+      val mn2windows = Version("micronaut", "2.0.0", "WINDOWS_64", "http://dl/mn-2.0.0-windows.zip")
+      val mn1universal = Version("micronaut", "1.3.5", "UNIVERSAL", "http://dl/mn-1.3.5.zip")
+
+      val micronautVersions = Seq(mn1universal, mn2darwin, mn2linux, mn2windows)
+
+      micronautVersions.foreach(Mongo.insertVersion)
+
+      whenReady(findAllVersionsByCandidatePlatform("micronaut", "LINUX_64")) { versions =>
+        versions.size shouldBe 2
+        versions(0) shouldBe mn1universal
+        versions(1) shouldBe mn2linux
+      }
+    }
+
     "read versions with optional vendor" when {
 
       val candidate = "java"
