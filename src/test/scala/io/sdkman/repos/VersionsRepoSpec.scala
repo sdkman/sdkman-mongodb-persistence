@@ -104,6 +104,21 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
       }
     }
 
+    "read version with optional visibility" when {
+      val candidate = "java"
+      val version = "8.0.265.hs"
+      val platform = "LINUX_64"
+      val url = "https://dl/OpenJDK8U-jdk_x64_linux_hotspot_8u272b10.tar.gz"
+
+      "the candidate is visible" in new TestRepo {
+        Mongo.insertVersion(Version(candidate, version, platform, url, Option("adpt")))
+
+        whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
+          maybeVersion.value.visible.value should be "true"
+        }
+      }
+    }
+
     "attempt to find all Versions by candidate and version" when {
 
       "more than one version platform is available" in new TestRepo {
