@@ -2,6 +2,7 @@ package io.sdkman.repos
 
 import com.typesafe.config.{Config, ConfigFactory}
 import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
+import org.mongodb.scala.bson.collection.mutable.Document
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfter, Matchers, OptionValues, WordSpec}
 import support.Mongo
@@ -110,11 +111,27 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
       val platform = "LINUX_64"
       val url = "https://dl/OpenJDK8U-jdk_x64_linux_hotspot_8u272b10.tar.gz"
 
-      "the candidate is visible" in new TestRepo {
-        Mongo.insertVersion(Version(candidate, version, platform, url, Option("adpt")))
+      "the version without `visible` field is visible" in new TestRepo {
+        db.getCollection[Document]("versions").insertOne(Document("candidate" -> candidate, "version" -> version, "platform" -> platform))
 
         whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
-          maybeVersion.value.visible.value should be "true"
+          maybeVersion.value.visible.value should be true
+        }
+      }
+
+      "the version is visible" in new TestRepo {
+        Mongo.insertVersion(Version(candidate, version, platform, url, Option("adpt"), Option(true)))
+
+        whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
+          maybeVersion.value.visible.value should be true
+        }
+      }
+
+      "the version is not visible" in new TestRepo {
+        Mongo.insertVersion(Version(candidate, version, platform, url, Option("adpt"), Option(false)))
+
+        whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
+          maybeVersion.value.visible.value should be false
         }
       }
     }
