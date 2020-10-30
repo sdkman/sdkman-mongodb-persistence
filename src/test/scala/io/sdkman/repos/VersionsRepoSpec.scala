@@ -2,9 +2,11 @@ package io.sdkman.repos
 
 import com.typesafe.config.{Config, ConfigFactory}
 import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
+import org.mongodb.scala.Completed
 import org.mongodb.scala.bson.collection.mutable.Document
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfter, Matchers, OptionValues, WordSpec}
+import support.Helpers.GenericObservable
 import support.Mongo
 import support.Mongo.versionPublished
 
@@ -112,26 +114,26 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
       val url = "https://dl/OpenJDK8U-jdk_x64_linux_hotspot_8u272b10.tar.gz"
 
       "the version without `visible` field is visible" in new TestRepo {
-        db.getCollection[Document]("versions").insertOne(Document("candidate" -> candidate, "version" -> version, "platform" -> platform))
+        Mongo.insertVersion(Version(candidate, version, platform, url, Some("adpt"), None))
 
         whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
-          maybeVersion.value.visible.value should be true
+          maybeVersion.value.visible should not be 'defined
         }
       }
 
       "the version is visible" in new TestRepo {
-        Mongo.insertVersion(Version(candidate, version, platform, url, Option("adpt"), Option(true)))
+        Mongo.insertVersion(Version(candidate, version, platform, url, Some("adpt"), Some(true)))
 
         whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
-          maybeVersion.value.visible.value should be true
+          maybeVersion.value.visible.value shouldBe true
         }
       }
 
       "the version is not visible" in new TestRepo {
-        Mongo.insertVersion(Version(candidate, version, platform, url, Option("adpt"), Option(false)))
+        Mongo.insertVersion(Version(candidate, version, platform, url, Some("adpt"), Some(false)))
 
         whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
-          maybeVersion.value.visible.value should be false
+          maybeVersion.value.visible.value shouldBe false
         }
       }
     }
