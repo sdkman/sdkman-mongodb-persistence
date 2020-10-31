@@ -2,9 +2,9 @@ name := "sdkman-mongodb-persistence"
 
 organization := "io.sdkman"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.12"
 
-crossScalaVersions := Seq("2.11.12", "2.12.8")
+crossScalaVersions := Seq("2.11.12", "2.12.12", "2.13.3")
 
 parallelExecution in Test := false
 
