@@ -2,8 +2,11 @@ package io.sdkman.repos
 
 import com.typesafe.config.{Config, ConfigFactory}
 import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
+import org.mongodb.scala.Completed
+import org.mongodb.scala.bson.collection.mutable.Document
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfter, Matchers, OptionValues, WordSpec}
+import support.Helpers.GenericObservable
 import support.Mongo
 import support.Mongo.versionPublished
 
@@ -100,6 +103,37 @@ class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with S
         Mongo.insertVersion(Version(candidate, version, platform, "http://dl/8u131-b14/jdk-8u131-linux-x64.tar.gz", None))
         whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
           maybeVersion.value.vendor should not be 'defined
+        }
+      }
+    }
+
+    "read version with optional visibility" when {
+      val candidate = "java"
+      val version = "8.0.265.hs"
+      val platform = "LINUX_64"
+      val url = "https://dl/OpenJDK8U-jdk_x64_linux_hotspot_8u272b10.tar.gz"
+
+      "the version without `visible` field is visible" in new TestRepo {
+        Mongo.insertVersion(Version(candidate, version, platform, url, Some("adpt"), None))
+
+        whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
+          maybeVersion.value.visible should not be 'defined
+        }
+      }
+
+      "the version is visible" in new TestRepo {
+        Mongo.insertVersion(Version(candidate, version, platform, url, Some("adpt"), Some(true)))
+
+        whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
+          maybeVersion.value.visible.value shouldBe true
+        }
+      }
+
+      "the version is not visible" in new TestRepo {
+        Mongo.insertVersion(Version(candidate, version, platform, url, Some("adpt"), Some(false)))
+
+        whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
+          maybeVersion.value.visible.value shouldBe false
         }
       }
     }

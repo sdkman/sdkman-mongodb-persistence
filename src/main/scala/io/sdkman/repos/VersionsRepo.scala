@@ -36,4 +36,5 @@ case class Version(candidate: String,
                    version: String,
                    platform: String,
                    url: String,
-                   vendor: Option[String] = None)
+                   vendor: Option[String] = None,
+                   visible: Option[Boolean] = Some(true))
