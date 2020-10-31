@@ -2,15 +2,14 @@ package io.sdkman.repos
 
 import com.typesafe.config.{Config, ConfigFactory}
 import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
-import org.mongodb.scala.Completed
-import org.mongodb.scala.bson.collection.mutable.Document
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{BeforeAndAfter, Matchers, OptionValues, WordSpec}
-import support.Helpers.GenericObservable
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 import support.Mongo.versionPublished
 
-class VersionsRepoSpec extends WordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
+class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
 
   "versions repository" should {
 

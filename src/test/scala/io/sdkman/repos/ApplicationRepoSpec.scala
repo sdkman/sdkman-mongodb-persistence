@@ -3,10 +3,12 @@ package io.sdkman.repos
 import com.typesafe.config.{Config, ConfigFactory}
 import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{BeforeAndAfter, Matchers, OptionValues, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 
-class ApplicationRepoSpec extends WordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
+class ApplicationRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
 
   "application repository" should {
 
@@ -29,7 +31,7 @@ class ApplicationRepoSpec extends WordSpec with Matchers with BeforeAndAfter wit
 
       "that row is missing" in new TestRepo {
         whenReady(findApplication()) { maybeApp =>
-          maybeApp should not be defined
+          maybeApp shouldBe None
         }
       }
     }
