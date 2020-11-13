@@ -60,7 +60,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
 
       javaVersions.foreach(Mongo.insertVersion)
 
-      whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
+      whenReady(findAllVisibleVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
         versions.size shouldBe 3
         versions(0) shouldBe java8u111
         versions(1) shouldBe java8u121
@@ -78,7 +78,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
 
       micronautVersions.foreach(Mongo.insertVersion)
 
-      whenReady(findAllVersionsByCandidatePlatform("micronaut", "LINUX_64")) { versions =>
+      whenReady(findAllVisibleVersionsByCandidatePlatform("micronaut", "LINUX_64")) { versions =>
         versions.size shouldBe 2
         versions(0) shouldBe mn1universal
         versions(1) shouldBe mn2linux
@@ -95,7 +95,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
 
         javaVersions.foreach(Mongo.insertVersion)
 
-        whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
+        whenReady(findAllVisibleVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
           versions.size shouldBe 1
           versions(0) shouldBe java8u121
         }
@@ -109,7 +109,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
 
         javaVersions.foreach(Mongo.insertVersion)
 
-        whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
+        whenReady(findAllVisibleVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
           versions.size shouldBe 1
           versions(0) shouldBe java8u121
         }
@@ -123,7 +123,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
 
         javaVersions.foreach(Mongo.insertVersion)
 
-        whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
+        whenReady(findAllVisibleVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
           versions.size shouldBe 1
           versions(0) shouldBe java8u121
         }

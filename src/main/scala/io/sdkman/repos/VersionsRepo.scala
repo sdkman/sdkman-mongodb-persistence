@@ -13,7 +13,7 @@ trait VersionsRepo {
 
   def saveVersion(v: Version): Future[Completed] = versionsCollection.insertOne(v).head()
 
-  def findAllVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
+  def findAllVisibleVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
     versionsCollection
       .find(and(equal("candidate", candidate),
         or(equal("platform", platform), equal("platform", "UNIVERSAL")),
