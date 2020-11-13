@@ -87,7 +87,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
 
     "attempt to find all versions by candidate and platform" when {
 
-      "that are set to be visible" in new TestRepo {
+      "when they are set to be visible" in new TestRepo {
         val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", visible = Some(false))
         val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz", visible = Some(true))
 
@@ -101,7 +101,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
         }
       }
 
-      "that are set to be visible by their default value" in new TestRepo {
+      "when they are set to be visible by their default value" in new TestRepo {
         val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", visible = Some(false))
         val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz")
 
@@ -115,7 +115,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
         }
       }
 
-      "that have no `visible` field" in new TestRepo {
+      "when they have no `visible` field" in new TestRepo {
         val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", visible = Some(false))
         val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz", visible = None)
 
