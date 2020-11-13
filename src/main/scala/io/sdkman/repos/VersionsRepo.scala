@@ -18,7 +18,7 @@ trait VersionsRepo {
       .find(and(
         equal("candidate", candidate),
         or(equal("platform", platform), equal("platform", "UNIVERSAL")),
-        equal("visible", true)))
+        or(equal("visible", true), not(exists("visible")))))
       .sort(ascending("version"))
       .toFuture()
 

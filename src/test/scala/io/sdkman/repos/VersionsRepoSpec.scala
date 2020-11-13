@@ -86,17 +86,46 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
     }
 
     "attempt to find all versions by candidate and platform" when {
-      "that are visible" in new TestRepo {
-        val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", visible = Some(false))
-        val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz")
-        val java8u131 = Version("java", "8u131", "LINUX_64", "http://dl/8u131-b14/jdk-8u131-linux-x64.tar.gz")
 
-        val javaVersions = Seq(java8u111, java8u121, java8u131)
+      "that are set to be visible" in new TestRepo {
+        val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", visible = Some(false))
+        val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz", visible = Some(true))
+
+        val javaVersions = Seq(java8u111, java8u121)
 
         javaVersions.foreach(Mongo.insertVersion)
 
         whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
-          versions.size shouldBe 2
+          versions.size shouldBe 1
+          versions(0) shouldBe java8u121
+        }
+      }
+
+      "that are set to be visible by their default value" in new TestRepo {
+        val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", visible = Some(false))
+        val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz")
+
+        val javaVersions = Seq(java8u111, java8u121)
+
+        javaVersions.foreach(Mongo.insertVersion)
+
+        whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
+          versions.size shouldBe 1
+          versions(0) shouldBe java8u121
+        }
+      }
+
+      "that have no `visible` field" in new TestRepo {
+        val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", visible = Some(false))
+        val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz", visible = None)
+
+        val javaVersions = Seq(java8u111, java8u121)
+
+        javaVersions.foreach(Mongo.insertVersion)
+
+        whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
+          versions.size shouldBe 1
+          versions(0) shouldBe java8u121
         }
       }
     }
