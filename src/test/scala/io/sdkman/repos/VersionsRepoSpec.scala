@@ -9,6 +9,8 @@ import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 import support.Mongo.versionPublished
 
+import scala.::
+
 class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
 
   "versions repository" should {
@@ -82,6 +84,22 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
         versions.size shouldBe 2
         versions(0) shouldBe mn1universal
         versions(1) shouldBe mn2linux
+      }
+    }
+
+    "attempt to find all versions by candidate and platform" when {
+      "that are visible" in new TestRepo {
+        val java8u111 = Version("java", "8u111", "LINUX_64", "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", visible = Some(false))
+        val java8u121 = Version("java", "8u121", "LINUX_64", "http://dl/8u121-b14/jdk-8u121-linux-x64.tar.gz")
+        val java8u131 = Version("java", "8u131", "LINUX_64", "http://dl/8u131-b14/jdk-8u131-linux-x64.tar.gz")
+
+        val javaVersions = Seq(java8u111, java8u121, java8u131)
+
+        javaVersions.foreach(Mongo.insertVersion)
+
+        whenReady(findAllVersionsByCandidatePlatform("java", "LINUX_64")) { versions =>
+          versions.size shouldBe 2
+        }
       }
     }
 

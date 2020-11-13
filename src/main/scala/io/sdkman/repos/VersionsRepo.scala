@@ -15,7 +15,10 @@ trait VersionsRepo {
 
   def findAllVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
     versionsCollection
-      .find(and(equal("candidate", candidate), or(equal("platform", platform), equal("platform", "UNIVERSAL"))))
+      .find(and(
+        equal("candidate", candidate),
+        or(equal("platform", platform), equal("platform", "UNIVERSAL")),
+        equal("visible", true)))
       .sort(ascending("version"))
       .toFuture()
 
