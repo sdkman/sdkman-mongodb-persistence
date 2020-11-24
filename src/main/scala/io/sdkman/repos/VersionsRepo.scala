@@ -13,6 +13,10 @@ trait VersionsRepo {
 
   def saveVersion(v: Version): Future[Completed] = versionsCollection.insertOne(v).head()
 
+  // for backwards-compatibility
+  def findAllVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
+    findAllVisibleVersionsByCandidatePlatform(candidate, platform)
+
   def findAllVisibleVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
     versionsCollection
       .find(
