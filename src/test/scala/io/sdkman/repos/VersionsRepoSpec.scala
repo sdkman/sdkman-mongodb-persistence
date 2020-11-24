@@ -78,7 +78,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
 
       micronautVersions.foreach(Mongo.insertVersion)
 
-      whenReady(findAllVisibleVersionsByCandidatePlatform("micronaut", "LINUX_64")) { versions =>
+      whenReady(findAllVersionsByCandidatePlatform("micronaut", "LINUX_64")) { versions =>
         versions.size shouldBe 2
         versions(0) shouldBe mn1universal
         versions(1) shouldBe mn2linux
