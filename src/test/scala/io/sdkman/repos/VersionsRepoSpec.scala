@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 import support.Mongo.versionPublished
 
-class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues with TableDrivenPropertyChecks {
+class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
 
   "versions repository" should {
 
@@ -201,7 +201,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
       }
     }
 
-    "attempt to find all versions by platform where version starts with a major version and ends on a vendor suffix" in new TestRepo {
+    "attempt to find all versions by platform where version starts with a major version and ends on a vendor suffix" in new TestRepo with TableDrivenPropertyChecks {
       val data =
         Table(
           ("platform", "majorVersion", "vendorSuffix", "installedVersions", "expectedVersions"),
