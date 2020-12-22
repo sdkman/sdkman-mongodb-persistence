@@ -4,12 +4,13 @@ import com.typesafe.config.{Config, ConfigFactory}
 import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 import support.Mongo.versionPublished
 
-class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
+class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues with TableDrivenPropertyChecks {
 
   "versions repository" should {
 
@@ -196,6 +197,51 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
         whenReady(findAllVersionsByCandidateVersion(candidate, version)) { versions =>
           versions shouldBe 'nonEmpty
           versions.size shouldBe 2
+        }
+      }
+    }
+
+    "attempt to find all versions by platform where version starts with a major version and ends on a vendor suffix" in new TestRepo {
+      val data =
+        Table(
+          ("platform", "majorVersion", "vendorSuffix", "installedVersions", "expectedVersions"),
+          ("LINUX_64", 8, "open", List.empty, List.empty),
+          ("LINUX_64", 8, "open",
+            Seq(Version("java", "8.0.265-open", "LINUX_64", "https://dl/OpenJDK8U-jdk_x64_linux_8u265b01.tar.gz", Some("open"))),
+            Seq(Version("java", "8.0.265-open", "LINUX_64", "https://dl/OpenJDK8U-jdk_x64_linux_8u265b01.tar.gz", Some("open")))),
+          ("LINUX_64", 8, "open",
+            Seq(
+              Version("java", "8.0.265-open", "LINUX_64", "https://dl/OpenJDK8U-jdk_x64_linux_8u265b01.tar.gz", Some("open")),
+              Version("java", "11.0.2-open", "LINUX_64", "https://dl/openjdk-11.0.2_linux-x64_bin.tar.gz", Some("open"))
+            ),
+            Seq(Version("java", "8.0.265-open", "LINUX_64", "https://dl/OpenJDK8U-jdk_x64_linux_8u265b01.tar.gz", Some("open")))),
+          ("LINUX_64", 16, "open",
+            Seq(
+              Version("java", "16.ea.28-open", "LINUX_64", "https://dl/openjdk-16-ea+28_linux-x64_bin.tar.gz", Some("open")),
+              Version("java", "16.ea.9.lm-open", "LINUX_64", "https://dl/openjdk-16-loom+9-316_linux-x64_bin.tar.gz", Some("open"))
+            ),
+            Seq(Version("java", "16.ea.28-open", "LINUX_64", "https://dl/openjdk-16-ea+28_linux-x64_bin.tar.gz", Some("open")))),
+          ("LINUX_64", 13, "librca",
+            Seq(
+              Version("java", "13.0.2-librca", "LINUX_64", "https://dl/bellsoft-jdk13.0.2+9-linux-amd64.tar.gz", Some("librca")),
+              Version("java", "13.0.2.fx-librca", "LINUX_64", "https://dl/bellsoft-jdk13.0.2+9-linux-amd64-full.tar.gz", Some("librca"))
+            ),
+            Seq(Version("java", "13.0.2-librca", "LINUX_64", "https://dl/bellsoft-jdk13.0.2+9-linux-amd64.tar.gz", Some("librca")))),
+          ("LINUX_64", 13, "fx-librca",
+            Seq(
+              Version("java", "13.0.2-librca", "LINUX_64", "https://dl/bellsoft-jdk13.0.2+9-linux-amd64.tar.gz", Some("librca")),
+              Version("java", "13.0.2.fx-librca", "LINUX_64", "https://dl/bellsoft-jdk13.0.2+9-linux-amd64-full.tar.gz", Some("librca"))
+            ),
+            Seq(Version("java", "13.0.2.fx-librca", "LINUX_64", "https://dl/bellsoft-jdk13.0.2+9-linux-amd64-full.tar.gz", Some("librca"))))
+        )
+
+      forAll(data) { (platform: String, majorVersion: Int, vendorSuffix: String, installedVersions: Seq[Version], expectedVersions: Seq[Version]) =>
+        Mongo.dropAllCollections()
+
+        installedVersions.foreach(Mongo.insertVersion)
+
+        whenReady(findJavaVersionSeries(platform, majorVersion, vendorSuffix)) { versions =>
+          versions shouldBe expectedVersions
         }
       }
     }
