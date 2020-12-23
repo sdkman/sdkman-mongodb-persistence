@@ -205,7 +205,7 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
       val data =
         Table(
           ("platform", "majorVersion", "vendorSuffix", "installedVersions", "expectedVersions"),
-          ("LINUX_64", 8, "open", List.empty, List.empty),
+          ("LINUX_64", 8, "open", Seq.empty, Seq.empty),
           ("LINUX_64", 8, "open",
             Seq(Version("java", "8.0.265-open", "LINUX_64", "https://dl/OpenJDK8U-jdk_x64_linux_8u265b01.tar.gz", Some("open"))),
             Seq(Version("java", "8.0.265-open", "LINUX_64", "https://dl/OpenJDK8U-jdk_x64_linux_8u265b01.tar.gz", Some("open")))),
