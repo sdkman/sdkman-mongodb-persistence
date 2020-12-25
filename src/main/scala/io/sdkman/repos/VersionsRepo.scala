@@ -37,6 +37,15 @@ trait VersionsRepo {
       .first
       .toFuture()
       .map(_.headOption)
+
+  def findJavaVersionSeries(platform: String, majorVersion: Int, vendorSuffix: Any): Future[Seq[Version]] =
+    versionsCollection
+      .find(
+        and(equal("candidate", "java"),
+          regex("version", s"^$majorVersion"),
+          regex("version", s"\\.$vendorSuffix|[0-9]-$vendorSuffix$$"),
+          equal("platform", platform)))
+      .toFuture()
 }
 
 case class Version(candidate: String,
