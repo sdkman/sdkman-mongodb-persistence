@@ -12,9 +12,12 @@ trait MongoConnectivity {
   self: MongoConfiguration =>
 
   def remoteConnectionString =
-    new ConnectionString(s"mongodb://$userName:$password@$mongoHost:$mongoPort/$databaseName?authMechanism=SCRAM-SHA-1")
+    new ConnectionString(
+      s"mongodb://$userName:$password@$mongoHost:$mongoPort/$databaseName?authMechanism=SCRAM-SHA-1"
+    )
 
-  lazy val clientSettings = MongoClientSettings.builder()
+  lazy val clientSettings = MongoClientSettings
+    .builder()
     .applyConnectionString(remoteConnectionString)
     .codecRegistry(MongoClient.DEFAULT_CODEC_REGISTRY)
     .build()
@@ -30,8 +33,10 @@ trait MongoConnectivity {
     fromProviders(
       createCodecProviderIgnoreNone[Version](),
       createCodecProvider[Candidate](),
-      createCodecProvider[Application]()),
-    DEFAULT_CODEC_REGISTRY)
+      createCodecProvider[Application]()
+    ),
+    DEFAULT_CODEC_REGISTRY
+  )
 
   def db: MongoDatabase = mongoClient.getDatabase(databaseName).withCodecRegistry(codecRegistry)
 

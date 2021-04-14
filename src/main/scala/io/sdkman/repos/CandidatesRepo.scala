@@ -36,9 +36,11 @@ trait CandidatesRepo {
       .toFuture()
 }
 
-case class Candidate(candidate: String,
-                     name: String,
-                     description: String,
-                     default: Option[String],
-                     websiteUrl: String,
-                     distribution: String)
+case class Candidate(
+    candidate: String,
+    name: String,
+    description: String,
+    default: Option[String],
+    websiteUrl: String,
+    distribution: String
+)

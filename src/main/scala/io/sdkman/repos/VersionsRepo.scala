@@ -20,19 +20,31 @@ trait VersionsRepo {
         and(
           equal("candidate", v.candidate),
           equal("version", v.version),
-          equal("platform", v.platform)),
-        updated).head()
+          equal("platform", v.platform)
+        ),
+        updated
+      )
+      .head()
 
   // for backwards-compatibility
-  def findAllVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
+  def findAllVersionsByCandidatePlatform(
+      candidate: String,
+      platform: String
+  ): Future[Seq[Version]] =
     findAllVisibleVersionsByCandidatePlatform(candidate, platform)
 
-  def findAllVisibleVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
+  def findAllVisibleVersionsByCandidatePlatform(
+      candidate: String,
+      platform: String
+  ): Future[Seq[Version]] =
     versionsCollection
       .find(
-        and(equal("candidate", candidate),
-        or(equal("platform", platform), equal("platform", "UNIVERSAL")),
-        or(equal("visible", true), not(exists("visible")))))
+        and(
+          equal("candidate", candidate),
+          or(equal("platform", platform), equal("platform", "UNIVERSAL")),
+          or(equal("visible", true), not(exists("visible")))
+        )
+      )
       .sort(ascending("version"))
       .toFuture()
 
@@ -43,24 +55,35 @@ trait VersionsRepo {
 
   def findVersion(candidate: String, version: String, platform: String): Future[Option[Version]] =
     versionsCollection
-      .find(and(equal("candidate", candidate), equal("version", version), equal("platform", platform)))
+      .find(
+        and(equal("candidate", candidate), equal("version", version), equal("platform", platform))
+      )
       .first
       .toFuture()
       .map(_.headOption)
 
-  def findJavaVersionSeries(platform: String, majorVersion: Int, vendorSuffix: Any): Future[Seq[Version]] =
+  def findJavaVersionSeries(
+      platform: String,
+      majorVersion: Int,
+      vendorSuffix: Any
+  ): Future[Seq[Version]] =
     versionsCollection
       .find(
-        and(equal("candidate", "java"),
+        and(
+          equal("candidate", "java"),
           regex("version", s"^$majorVersion"),
           regex("version", s"\\.$vendorSuffix|[0-9]-$vendorSuffix$$"),
-          equal("platform", platform)))
+          equal("platform", platform)
+        )
+      )
       .toFuture()
 }
 
-case class Version(candidate: String,
-                   version: String,
-                   platform: String,
-                   url: String,
-                   vendor: Option[String] = None,
-                   visible: Option[Boolean] = Some(true))
+case class Version(
+    candidate: String,
+    version: String,
+    platform: String,
+    url: String,
+    vendor: Option[String] = None,
+    visible: Option[Boolean] = Some(true)
+)
