@@ -2,7 +2,7 @@ package io.sdkman.repos
 
 import com.typesafe.config.{Config, ConfigFactory}
 import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
-import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.wordspec.AnyWordSpec
@@ -10,7 +10,7 @@ import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 import support.Mongo.versionPublished
 
-class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues with TableDrivenPropertyChecks {
+class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues with TableDrivenPropertyChecks with IntegrationPatience {
 
   "versions repository" should {
 
@@ -24,6 +24,21 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
       whenReady(saveVersion(Version(candidate, version, platform, url))) { completed =>
         completed.toString shouldBe "The operation completed successfully"
         versionPublished(candidate, version, url, platform) shouldBe true
+      }
+    }
+
+    "update a version" in new TestRepo {
+
+      val candidate = "java"
+      val version = "8u111"
+      val platform = "LINUX_64"
+
+      private val original = Version(candidate, version, platform, "http://dl/8u101-b13/jdk-8u101-linux-x64.tar.gz", Some("oracle"), Some(false))
+      private val updated = Version(candidate, version, platform, "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz", Some("zulu"), Some(true))
+
+      whenReady(saveVersion(original).flatMap(_ => updateVersion(original, updated))) { result =>
+        result.getModifiedCount shouldBe 1
+        Mongo.findVersion(candidate, version, platform).value shouldBe updated
       }
     }
 

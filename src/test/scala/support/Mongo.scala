@@ -69,6 +69,12 @@ object Mongo {
       .first
       .headOption()
       .map(_.nonEmpty), 5.seconds)
+
+  def findVersion(candidate: String, version: String, platform: String): Option[Version] = Await.result(
+    versionsCollection
+      .find(and(equal("candidate", candidate), equal("version", version), equal("platform", platform)))
+      .first
+      .headOption(), 5.seconds)
 }
 
 object Helpers {

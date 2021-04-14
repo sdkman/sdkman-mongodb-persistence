@@ -3,6 +3,7 @@ package io.sdkman.repos
 import io.sdkman.db.MongoConnectivity
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Sorts.ascending
+import org.mongodb.scala.result.UpdateResult
 import org.mongodb.scala.{Completed, ScalaObservable}
 
 import scala.concurrent.Future
@@ -12,6 +13,15 @@ trait VersionsRepo {
   self: MongoConnectivity =>
 
   def saveVersion(v: Version): Future[Completed] = versionsCollection.insertOne(v).head()
+
+  def updateVersion(v: Version, updated: Version): Future[UpdateResult] =
+    versionsCollection
+      .replaceOne(
+        and(
+          equal("candidate", v.candidate),
+          equal("version", v.version),
+          equal("platform", v.platform)),
+        updated).head()
 
   // for backwards-compatibility
   def findAllVersionsByCandidatePlatform(candidate: String, platform: String): Future[Seq[Version]] =
