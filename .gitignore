@@ -74,10 +74,10 @@ project/plugins/project/
 .history
 .cache
 .lib/
+.bsp/
 
 ### Scala ###
 *.class
 *.log
-
 
 # End of https://www.gitignore.io/api/sbt,scala,intellij+all
