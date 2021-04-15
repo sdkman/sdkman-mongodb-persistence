@@ -42,6 +42,19 @@ class VersionsRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter wit
       }
     }
 
+    "delete a version" in new TestRepo {
+      val candidate = "java"
+      val version = "8u111"
+      val platform = "LINUX_64"
+
+      private val original = Version(candidate, version, platform, "http://dl/8u101-b13/jdk-8u101-linux-x64.tar.gz", Some("oracle"), Some(false))
+
+      whenReady(saveVersion(original).flatMap(_ => deleteVersion(original))) { result =>
+        result.getDeletedCount shouldBe 1
+        Mongo.findVersion(candidate, version, platform) shouldBe None
+      }
+    }
+
     "attempt to find one Version by candidate, version and platform" when {
 
       "that version is available" in new TestRepo {

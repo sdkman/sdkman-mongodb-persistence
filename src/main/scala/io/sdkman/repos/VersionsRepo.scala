@@ -3,8 +3,8 @@ package io.sdkman.repos
 import io.sdkman.db.MongoConnectivity
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Sorts.ascending
-import org.mongodb.scala.result.UpdateResult
-import org.mongodb.scala.{Completed, ScalaObservable}
+import org.mongodb.scala.result.{DeleteResult, UpdateResult}
+import org.mongodb.scala.{Completed, ScalaObservable, SingleObservable}
 
 import scala.concurrent.Future
 
@@ -25,6 +25,15 @@ trait VersionsRepo {
         updated
       )
       .head()
+
+  def deleteVersion(v: Version): Future[DeleteResult] =
+    versionsCollection.deleteOne(
+      and(
+        equal("candidate", v.candidate),
+        equal("version", v.version),
+        equal("platform", v.platform)
+      )
+    ).head()
 
   // for backwards-compatibility
   def findAllVersionsByCandidatePlatform(
