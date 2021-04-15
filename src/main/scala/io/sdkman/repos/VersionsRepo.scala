@@ -26,13 +26,13 @@ trait VersionsRepo {
       )
       .head()
 
-  def deleteVersion(v: Version): Future[DeleteResult] =
+  def deleteVersion(candidate: String, version: String, platform: String): Future[DeleteResult] =
     versionsCollection
       .deleteOne(
         and(
-          equal("candidate", v.candidate),
-          equal("version", v.version),
-          equal("platform", v.platform)
+          equal("candidate", candidate),
+          equal("version", version),
+          equal("platform", platform)
         )
       )
       .head()

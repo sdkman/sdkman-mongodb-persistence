@@ -77,9 +77,10 @@ class VersionsRepoSpec
         Some(false)
       )
 
-      whenReady(saveVersion(original).flatMap(_ => deleteVersion(original))) { result =>
-        result.getDeletedCount shouldBe 1
-        Mongo.findVersion(candidate, version, platform) shouldBe None
+      whenReady(saveVersion(original).flatMap(_ => deleteVersion(candidate, version, platform))) {
+        result =>
+          result.getDeletedCount shouldBe 1
+          Mongo.findVersion(candidate, version, platform) shouldBe None
       }
     }
 
