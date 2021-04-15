@@ -22,8 +22,10 @@ object Mongo {
     fromProviders(
       createCodecProviderIgnoreNone[Version],
       createCodecProvider[Candidate],
-      createCodecProvider[Application]),
-    DEFAULT_CODEC_REGISTRY)
+      createCodecProvider[Application]
+    ),
+    DEFAULT_CODEC_REGISTRY
+  )
 
   lazy val mongoClient = MongoClient("mongodb://localhost:27017")
 
@@ -51,35 +53,55 @@ object Mongo {
     candidatesCollection.drop().results()
   }
 
-  def isDefault(candidate: String, version: String): Boolean = Await.result(
-    candidatesCollection
-      .find(and(equal("candidate", candidate), equal("default", version)))
-      .headOption()
-      .map(_.nonEmpty), 5.seconds)
+  def isDefault(candidate: String, version: String): Boolean =
+    Await.result(
+      candidatesCollection
+        .find(and(equal("candidate", candidate), equal("default", version)))
+        .headOption()
+        .map(_.nonEmpty),
+      5.seconds
+    )
 
-  def hasDefault(candidate: String): Boolean = Await.result(
-    candidatesCollection
-      .find(equal("candidate", candidate))
-      .first
-      .toFuture, 5.seconds).default.nonEmpty
+  def hasDefault(candidate: String): Boolean =
+    Await
+      .result(
+        candidatesCollection
+          .find(equal("candidate", candidate))
+          .first
+          .toFuture,
+        5.seconds
+      )
+      .default
+      .nonEmpty
 
-  def versionPublished(candidate: String, version: String, url: String, platform: String): Boolean = Await.result(
-    versionsCollection
-      .find(and(equal("candidate", candidate), equal("version", version), equal("platform", platform)))
-      .first
-      .headOption()
-      .map(_.nonEmpty), 5.seconds)
+  def versionPublished(candidate: String, version: String, url: String, platform: String): Boolean =
+    Await.result(
+      versionsCollection
+        .find(
+          and(equal("candidate", candidate), equal("version", version), equal("platform", platform))
+        )
+        .first
+        .headOption()
+        .map(_.nonEmpty),
+      5.seconds
+    )
 
-  def findVersion(candidate: String, version: String, platform: String): Option[Version] = Await.result(
-    versionsCollection
-      .find(and(equal("candidate", candidate), equal("version", version), equal("platform", platform)))
-      .first
-      .headOption(), 5.seconds)
+  def findVersion(candidate: String, version: String, platform: String): Option[Version] =
+    Await.result(
+      versionsCollection
+        .find(
+          and(equal("candidate", candidate), equal("version", version), equal("platform", platform))
+        )
+        .first
+        .headOption(),
+      5.seconds
+    )
 }
 
 object Helpers {
 
-  implicit class DocumentObservable[C](val observable: Observable[Document]) extends ImplicitObservable[Document] {
+  implicit class DocumentObservable[C](val observable: Observable[Document])
+      extends ImplicitObservable[Document] {
     override val converter: Document => String = doc => doc.toJson
   }
 

@@ -9,12 +9,45 @@ import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 import support.Mongo._
 
-class CandidatesRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
+class CandidatesRepoSpec
+    extends AnyWordSpec
+    with Matchers
+    with BeforeAndAfter
+    with ScalaFutures
+    with OptionValues {
 
-  val scala = Candidate("scala", "Scala", "The Scala Language", Some("2.12.0"), "http://www.scala-lang.org/", "UNIVERSAL")
-  val groovy = Candidate("groovy", "Groovy", "The Groovy Language", Some("2.4.7"), "http://www.groovy-lang.org/", "UNIVERSAL")
-  val java = Candidate("java", "Java", "The Java Language", Some("8u111"), "https://www.oracle.com", "MULTI_PLATFORM")
-  val micronaut = Candidate("micronaut", "Micronaut", "The Micronaut framework", None, "http://micronaut.io/", "UNIVERSAL")
+  val scala = Candidate(
+    "scala",
+    "Scala",
+    "The Scala Language",
+    Some("2.12.0"),
+    "http://www.scala-lang.org/",
+    "UNIVERSAL"
+  )
+  val groovy = Candidate(
+    "groovy",
+    "Groovy",
+    "The Groovy Language",
+    Some("2.4.7"),
+    "http://www.groovy-lang.org/",
+    "UNIVERSAL"
+  )
+  val java = Candidate(
+    "java",
+    "Java",
+    "The Java Language",
+    Some("8u111"),
+    "https://www.oracle.com",
+    "MULTI_PLATFORM"
+  )
+  val micronaut = Candidate(
+    "micronaut",
+    "Micronaut",
+    "The Micronaut framework",
+    None,
+    "http://micronaut.io/",
+    "UNIVERSAL"
+  )
 
   "candidates repository" should {
 
@@ -37,21 +70,17 @@ class CandidatesRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter w
 
     "find some single candidate when searching by know candidate identifier" in new TestRepo {
       val candidate = "java"
-      whenReady(findCandidate(candidate)) { maybeCandidate =>
-        maybeCandidate.value shouldBe java
-      }
+      whenReady(findCandidate(candidate)) { maybeCandidate => maybeCandidate.value shouldBe java }
     }
 
     "find none when searching by unknown candidate identifier" in new TestRepo {
       val candidate = "scoobeedoo"
-      whenReady(findCandidate(candidate)) { maybeCandidate =>
-        maybeCandidate shouldBe None
-      }
+      whenReady(findCandidate(candidate)) { maybeCandidate => maybeCandidate shouldBe None }
     }
 
     "update a single candidate when present" in new TestRepo {
       val candidate = "scala"
-      val version = "2.12.1"
+      val version   = "2.12.1"
       whenReady(updateDefaultVersion(candidate, version)) { _ =>
         withClue(s"$candidate was not set to default $version") {
           isDefault(candidate, version) shouldBe true
@@ -74,15 +103,11 @@ class CandidatesRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter w
     }
 
     "insert a candidate with default version" in new TestRepo {
-      whenReady(insertCandidate(scala)) { _ =>
-        hasDefault("scala") shouldBe true
-      }
+      whenReady(insertCandidate(scala)) { _ => hasDefault("scala") shouldBe true }
     }
 
     "insert a candidate with no default version" in new TestRepo {
-      whenReady(insertCandidate(micronaut)) { _ =>
-        hasDefault("micronaut") shouldBe false
-      }
+      whenReady(insertCandidate(micronaut)) { _ => hasDefault("micronaut") shouldBe false }
     }
   }
 

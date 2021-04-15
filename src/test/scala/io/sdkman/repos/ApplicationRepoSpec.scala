@@ -8,7 +8,12 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 
-class ApplicationRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter with ScalaFutures with OptionValues {
+class ApplicationRepoSpec
+    extends AnyWordSpec
+    with Matchers
+    with BeforeAndAfter
+    with ScalaFutures
+    with OptionValues {
 
   "application repository" should {
 
@@ -16,9 +21,9 @@ class ApplicationRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter 
 
       "that row is available" in new TestRepo {
 
-        val alive = "OK"
+        val alive            = "OK"
         val stableCliVersion = "8.8.8+888"
-        val betaCliVersion = "9.9.9+999"
+        val betaCliVersion   = "9.9.9+999"
 
         Mongo.insertApplication(Application(alive, stableCliVersion, betaCliVersion))
 
@@ -30,9 +35,7 @@ class ApplicationRepoSpec extends AnyWordSpec with Matchers with BeforeAndAfter 
       }
 
       "that row is missing" in new TestRepo {
-        whenReady(findApplication()) { maybeApp =>
-          maybeApp shouldBe None
-        }
+        whenReady(findApplication()) { maybeApp => maybeApp shouldBe None }
       }
     }
   }

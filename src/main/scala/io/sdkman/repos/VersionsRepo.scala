@@ -27,13 +27,15 @@ trait VersionsRepo {
       .head()
 
   def deleteVersion(v: Version): Future[DeleteResult] =
-    versionsCollection.deleteOne(
-      and(
-        equal("candidate", v.candidate),
-        equal("version", v.version),
-        equal("platform", v.platform)
+    versionsCollection
+      .deleteOne(
+        and(
+          equal("candidate", v.candidate),
+          equal("version", v.version),
+          equal("platform", v.platform)
+        )
       )
-    ).head()
+      .head()
 
   // for backwards-compatibility
   def findAllVersionsByCandidatePlatform(
