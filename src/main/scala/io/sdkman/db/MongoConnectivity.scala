@@ -22,7 +22,7 @@ trait MongoConnectivity {
     .codecRegistry(MongoClient.DEFAULT_CODEC_REGISTRY)
     .build()
 
-  lazy val localConnectionString = s"mongodb://localhost:27017/$databaseName"
+  lazy val localConnectionString = s"mongodb://$mongoHost:$mongoPort/$databaseName"
 
   lazy val mongoClient: MongoClient =
     if (userName.isEmpty)

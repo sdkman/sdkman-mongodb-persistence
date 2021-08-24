@@ -8,6 +8,7 @@ This library is used in the following SDKMAN services:
 * [sdkman-candidates](https://github.com/sdkman/sdkman-candidates)
 * [sdkman-hooks](https://github.com/sdkman/sdkman-hooks)
 * [vendor-release](https://github.com/sdkman/vendor-release)
+* [sdkman-broker](https://github.com/sdkman/sdkman-broker)
 
 ### Set Bintray credentials in sbt
 

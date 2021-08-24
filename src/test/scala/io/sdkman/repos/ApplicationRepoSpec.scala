@@ -5,13 +5,14 @@ import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfter, OptionValues}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, OptionValues}
 import support.Mongo
 
 class ApplicationRepoSpec
     extends AnyWordSpec
     with Matchers
     with BeforeAndAfter
+    with BeforeAndAfterAll
     with ScalaFutures
     with OptionValues {
 
@@ -40,11 +41,18 @@ class ApplicationRepoSpec
     }
   }
 
+  override def beforeAll() = Mongo.startMongoDb()
+
   before {
     Mongo.dropAllCollections()
   }
 
   private trait TestRepo extends ApplicationRepo with MongoConnectivity with MongoConfiguration {
-    override val config: Config = ConfigFactory.load()
+    override val config: Config = ConfigFactory.parseString(
+      f"""
+      mongo.url.host=${Mongo.getMongoDbHost()}
+      mongo.url.port=${Mongo.getMongoDbPort()}
+      """.trim()
+    ).withFallback(ConfigFactory.load())
   }
 }
