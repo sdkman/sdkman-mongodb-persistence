@@ -1,11 +1,12 @@
 package support
 
 import java.util.concurrent.TimeUnit
-
 import io.sdkman.repos.{Application, Candidate, Version}
 import org.mongodb.scala._
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.model.Filters.{and, equal}
+import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.utility.DockerImageName
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -27,7 +28,9 @@ object Mongo {
     DEFAULT_CODEC_REGISTRY
   )
 
-  lazy val mongoClient = MongoClient("mongodb://localhost:27017")
+  lazy val mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:3.2"))
+
+  lazy val mongoClient = MongoClient(f"mongodb://${mongoDBContainer.getHost}:${mongoDBContainer.getFirstMappedPort}")
 
   lazy val db = mongoClient.getDatabase("sdkman").withCodecRegistry(codecRegistry)
 
@@ -36,6 +39,14 @@ object Mongo {
   lazy val versionsCollection: MongoCollection[Version] = db.getCollection("versions")
 
   lazy val candidatesCollection: MongoCollection[Candidate] = db.getCollection("candidates")
+
+  def startMongoDb() =
+    if (!mongoDBContainer.isRunning)
+      mongoDBContainer.start()
+
+  def getMongoDbHost() = mongoDBContainer.getHost
+
+  def getMongoDbPort() = mongoDBContainer.getFirstMappedPort
 
   def insertApplication(app: Application) = appCollection.insertOne(app).results()
 

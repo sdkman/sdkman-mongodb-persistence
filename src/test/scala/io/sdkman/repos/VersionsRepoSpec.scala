@@ -6,7 +6,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfter, OptionValues}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, OptionValues}
 import support.Mongo
 import support.Mongo.versionPublished
 
@@ -14,6 +14,7 @@ class VersionsRepoSpec
     extends AnyWordSpec
     with Matchers
     with BeforeAndAfter
+    with BeforeAndAfterAll
     with ScalaFutures
     with OptionValues
     with TableDrivenPropertyChecks
@@ -477,12 +478,19 @@ class VersionsRepoSpec
     }
   }
 
+  override def beforeAll() = Mongo.startMongoDb()
+
   before {
     Mongo.dropAllCollections()
   }
 
   private trait TestRepo extends VersionsRepo with MongoConnectivity with MongoConfiguration {
-    override val config: Config = ConfigFactory.load()
+    override val config: Config = ConfigFactory.parseString(
+      f"""
+      mongo.url.host=${Mongo.getMongoDbHost()}
+      mongo.url.port=${Mongo.getMongoDbPort()}
+      """.trim()
+    ).withFallback(ConfigFactory.load())
   }
 
 }
