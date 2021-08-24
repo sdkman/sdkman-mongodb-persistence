@@ -96,5 +96,7 @@ case class Version(
     platform: String,
     url: String,
     vendor: Option[String] = None,
-    visible: Option[Boolean] = Some(true)
+    visible: Option[Boolean] = Some(true),
+    algorithm: Option[String] = None,
+    checksum: Option[String] = None
 )
