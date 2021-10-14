@@ -1,18 +1,20 @@
 package io.sdkman.repos
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{ConfigFactory, ConfigValueFactory}
 import io.sdkman.db.{MongoConfiguration, MongoConnectivity}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfter, OptionValues}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, Ignore, OptionValues}
 import support.Mongo
 import support.Mongo._
 
+@Ignore
 class CandidatesRepoSpec
     extends AnyWordSpec
     with Matchers
     with BeforeAndAfter
+    with BeforeAndAfterAll
     with ScalaFutures
     with OptionValues {
 
@@ -111,13 +113,22 @@ class CandidatesRepoSpec
     }
   }
 
+  override def beforeAll() = {
+    Mongo.startMongoDb()
+  }
+
+  override def afterAll() = {
+    Mongo.stopMongoDb()
+  }
+
   before {
     Mongo.dropAllCollections()
     Mongo.insertCandidates(Seq(scala, groovy, java, micronaut))
   }
 
   private trait TestRepo extends CandidatesRepo with MongoConnectivity with MongoConfiguration {
-    override val config = ConfigFactory.load()
+    override val config =  ConfigFactory.load()
+      .withValue("mongo.url.host",  ConfigValueFactory.fromAnyRef(Mongo.getMongoDbHost()))
+      .withValue("mongo.url.port",  ConfigValueFactory.fromAnyRef(Mongo.getMongoDbPort()))
   }
-
 }
