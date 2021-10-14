@@ -55,9 +55,7 @@ class VersionsRepoSpec
         platform,
         "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz",
         Some("zulu"),
-        Some(true),
-        Some("SHA-1"),
-        Some("jdk-8u111-linux-x64-hash")
+        Some(true)
       )
 
       whenReady(saveVersion(original).flatMap(_ => updateVersion(original, updated))) { result =>
@@ -98,15 +96,13 @@ class VersionsRepoSpec
         val checksum  = Some("jdk-8u111-linux-x64-hash")
 
         Mongo.insertVersion(
-          Version(candidate, version, platform, url, algorithm = algorithm, checksum = checksum))
+          Version(candidate, version, platform, url))
 
         whenReady(findVersion(candidate, version, platform)) { maybeVersion =>
           maybeVersion.value.candidate shouldBe candidate
           maybeVersion.value.version shouldBe version
           maybeVersion.value.platform shouldBe platform
           maybeVersion.value.url shouldBe url
-          maybeVersion.value.algorithm shouldBe algorithm
-          maybeVersion.value.checksum shouldBe checksum
         }
       }
 
