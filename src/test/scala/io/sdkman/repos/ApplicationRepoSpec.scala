@@ -45,10 +45,6 @@ class ApplicationRepoSpec
     Mongo.startMongoDb()
   }
 
-  override def afterAll() = {
-    Mongo.stopMongoDb()
-  }
-
   before {
     Mongo.dropAllCollections()
   }

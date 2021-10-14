@@ -6,7 +6,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.prop.TableDrivenPropertyChecks
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, Ignore, OptionValues}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, OptionValues}
 import support.Mongo
 import support.Mongo.versionPublished
 
@@ -487,10 +487,6 @@ class VersionsRepoSpec
 
   override def beforeAll() = {
     Mongo.startMongoDb()
-  }
-
-  override def afterAll() = {
-    Mongo.stopMongoDb()
   }
 
   before {

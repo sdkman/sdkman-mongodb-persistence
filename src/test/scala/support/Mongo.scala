@@ -42,13 +42,8 @@ object Mongo {
   lazy val candidatesCollection: MongoCollection[Candidate] = db.getCollection("candidates")
 
   def startMongoDb() = {
-    System.out.println("STARTING MONGOLO!")
-    mongoDBContainer.start()
-  }
-
-  def stopMongoDb() = {
-    System.out.println("STOPPING MONGOLO :-(")
-//    mongoDBContainer.stop()
+    if (!mongoDBContainer.isRunning)
+      mongoDBContainer.start()
   }
 
   def getMongoDbHost() = {
