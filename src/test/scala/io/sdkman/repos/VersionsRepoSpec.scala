@@ -10,6 +10,9 @@ import org.scalatest.{BeforeAndAfter, OptionValues}
 import support.Mongo
 import support.Mongo.versionPublished
 
+import java.util.UUID
+import scala.collection.immutable.TreeMap
+
 class VersionsRepoSpec
     extends AnyWordSpec
     with Matchers
@@ -55,6 +58,47 @@ class VersionsRepoSpec
         "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz",
         Some("zulu"),
         Some(true)
+      )
+
+      whenReady(saveVersion(original).flatMap(_ => updateVersion(original, updated))) { result =>
+        result.getModifiedCount shouldBe 1
+        Mongo.findVersion(candidate, version, platform).value shouldBe updated
+      }
+    }
+
+    "update a version with checksum info" in new TestRepo {
+
+      val candidate  = "java"
+      val version    = "8u111"
+      val platform   = "LINUX_64"
+      val randomUuid = UUID.randomUUID().toString
+
+      private val original = Version(
+        candidate,
+        version,
+        platform,
+        "http://dl/8u101-b13/jdk-8u101-linux-x64.tar.gz",
+        Some("oracle"),
+        Some(false)
+      )
+
+      private val checksums = TreeMap(
+        SHA1.id -> f"sha1-checksum-$randomUuid",
+        SHA256.id -> f"sha256-checksum-$randomUuid",
+        SHA512.id -> f"sha512-checksum-$randomUuid",
+        SHA224.id -> f"sha224-checksum-$randomUuid",
+        SHA384.id -> f"sha384-checksum-$randomUuid",
+        MD5.id -> f"md5-checksum-$randomUuid"
+      )
+
+      private val updated = Version(
+        candidate,
+        version,
+        platform,
+        "http://dl/8u111-b14/jdk-8u111-linux-x64.tar.gz",
+        Some("zulu"),
+        Some(true),
+        Some(checksums)
       )
 
       whenReady(saveVersion(original).flatMap(_ => updateVersion(original, updated))) { result =>

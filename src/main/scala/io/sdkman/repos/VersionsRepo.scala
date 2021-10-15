@@ -6,7 +6,9 @@ import org.mongodb.scala.model.Sorts.ascending
 import org.mongodb.scala.result.{DeleteResult, UpdateResult}
 import org.mongodb.scala.{Completed, ScalaObservable, SingleObservable}
 
+import scala.collection.immutable.TreeMap
 import scala.concurrent.Future
+import scala.math.Ordered.orderingToOrdered
 
 trait VersionsRepo {
 
@@ -90,11 +92,49 @@ trait VersionsRepo {
       .toFuture()
 }
 
+sealed trait ChecksumAlgorithm extends Ordering[ChecksumAlgorithm] {
+  def id: String
+  def rank : Integer
+
+  def compare(x: ChecksumAlgorithm, y: ChecksumAlgorithm): Int = x.rank compare y.rank
+}
+
+case object MD5 extends ChecksumAlgorithm {
+  override val id = "MD5"
+  override val rank = 1
+}
+
+case object SHA1 extends ChecksumAlgorithm {
+  override val id = "SHA-1"
+  override val rank = 2
+}
+
+case object SHA224 extends ChecksumAlgorithm {
+  override val id = "SHA-224"
+  override val rank = 3
+}
+
+case object SHA256 extends ChecksumAlgorithm {
+  override val id = "SHA-256"
+  override val rank = 4
+}
+
+case object SHA384 extends ChecksumAlgorithm {
+  override val id = "SHA-384"
+  override val rank = 5
+}
+
+case object SHA512 extends ChecksumAlgorithm {
+  override val id = "SHA-512"
+  override val rank = 6
+}
+
 case class Version(
     candidate: String,
     version: String,
     platform: String,
     url: String,
     vendor: Option[String] = None,
-    visible: Option[Boolean] = Some(true)
+    visible: Option[Boolean] = Some(true),
+    checksums: Option[TreeMap[String, String]] = None
 )
