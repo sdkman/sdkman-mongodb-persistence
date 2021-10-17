@@ -10,14 +10,6 @@ This library is used in the following SDKMAN services:
 * [vendor-release](https://github.com/sdkman/vendor-release)
 * [sdkman-broker](https://github.com/sdkman/sdkman-broker)
 
-### Set Bintray credentials in sbt
-
-    $ ./sbt bintrayChangeCredentials
-
 ### Run tests
 
     $ ./sbt test
-
-### Publish to Bintray
-
-    $ ./sbt "release cross with-defaults"
