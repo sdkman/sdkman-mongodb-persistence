@@ -1,6 +1,7 @@
 package io.sdkman.repos
 
 import io.sdkman.db.MongoConnectivity
+import io.sdkman.model.Candidate
 import org.mongodb.scala._
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Sorts.ascending
@@ -35,12 +36,3 @@ trait CandidatesRepo {
       .insertOne(candidate)
       .toFuture()
 }
-
-case class Candidate(
-    candidate: String,
-    name: String,
-    description: String,
-    default: Option[String],
-    websiteUrl: String,
-    distribution: String
-)

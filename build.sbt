@@ -8,7 +8,10 @@ crossScalaVersions := Seq("2.11.12", "2.12.12")
 
 parallelExecution in Test := false
 
-resolvers += Resolver.jcenterRepo
+resolvers ++= Seq(
+  Resolver.jcenterRepo,
+  "jitpack" at "https://jitpack.io"
+)
 
 bintrayOrganization := Some("sdkman")
 
@@ -19,6 +22,7 @@ bintrayReleaseOnPublish in ThisBuild := true
 libraryDependencies ++= Seq(
   "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
   "com.typesafe" % "config" % "1.3.1",
+  "com.github.sdkman" % "sdkman-persistent-model" % "1.0.1",
   "org.scalatest" %% "scalatest" % "3.2.2" % Test,
   "org.testcontainers" % "mongodb" % "1.16.0" % Test
 )

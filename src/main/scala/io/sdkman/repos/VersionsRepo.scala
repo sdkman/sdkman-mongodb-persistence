@@ -1,10 +1,11 @@
 package io.sdkman.repos
 
 import io.sdkman.db.MongoConnectivity
+import io.sdkman.model.Version
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Sorts.ascending
 import org.mongodb.scala.result.{DeleteResult, UpdateResult}
-import org.mongodb.scala.{Completed, ScalaObservable, SingleObservable}
+import org.mongodb.scala.{Completed, ScalaObservable}
 
 import scala.concurrent.Future
 
@@ -89,12 +90,3 @@ trait VersionsRepo {
       )
       .toFuture()
 }
-
-case class Version(
-    candidate: String,
-    version: String,
-    platform: String,
-    url: String,
-    vendor: Option[String] = None,
-    visible: Option[Boolean] = Some(true)
-)

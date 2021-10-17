@@ -1,6 +1,7 @@
 package io.sdkman.repos
 
 import io.sdkman.db.MongoConnectivity
+import io.sdkman.model.Application
 
 import scala.concurrent.Future
 
@@ -11,5 +12,3 @@ trait ApplicationRepo {
   def findApplication(): Future[Option[Application]] = appCollection.find().headOption()
 
 }
-
-case class Application(alive: String, stableCliVersion: String, betaCliVersion: String)
