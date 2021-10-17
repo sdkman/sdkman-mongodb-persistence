@@ -9,15 +9,9 @@ crossScalaVersions := Seq("2.11.12", "2.12.12")
 parallelExecution in Test := false
 
 resolvers ++= Seq(
-  Resolver.jcenterRepo,
+  Resolver.mavenCentral,
   "jitpack" at "https://jitpack.io"
 )
-
-bintrayOrganization := Some("sdkman")
-
-bintrayRepository := "maven"
-
-bintrayReleaseOnPublish in ThisBuild := true
 
 libraryDependencies ++= Seq(
   "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
