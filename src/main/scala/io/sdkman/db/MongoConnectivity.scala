@@ -1,7 +1,7 @@
 package io.sdkman.db
 
 import com.mongodb.{ConnectionString, MongoClientSettings}
-import io.sdkman.repos.{Application, Candidate, Version}
+import io.sdkman.model.{Application, Candidate, Version}
 import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._

@@ -1,7 +1,7 @@
 package support
 
 import java.util.concurrent.TimeUnit
-import io.sdkman.repos.{Application, Candidate, Version}
+import io.sdkman.model.{Application, Candidate, Version}
 import org.mongodb.scala._
 import org.mongodb.scala.bson.collection.immutable.Document
 import org.mongodb.scala.model.Filters.{and, equal}
