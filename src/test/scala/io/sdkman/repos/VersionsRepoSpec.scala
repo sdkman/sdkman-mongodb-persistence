@@ -485,12 +485,11 @@ class VersionsRepoSpec
   }
 
   private trait TestRepo extends VersionsRepo with MongoConnectivity with MongoConfiguration {
-    override val config: Config = ConfigFactory.parseString(
-      f"""
-      mongo.url.host=${Mongo.getMongoDbHost()}
-      mongo.url.port=${Mongo.getMongoDbPort()}
-      """.trim()
-    ).withFallback(ConfigFactory.load())
+    override val config: Config = ConfigFactory
+      .parseString(s"""
+                      |mongo.url.host=${Mongo.getMongoDbHost()}
+                      |mongo.url.port=${Mongo.getMongoDbPort()}
+      """.stripMargin)
+      .withFallback(ConfigFactory.load())
   }
-
 }
