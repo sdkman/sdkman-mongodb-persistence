@@ -23,16 +23,20 @@ class ApplicationRepoSpec
 
       "that row is available" in new TestRepo {
 
-        val alive            = "OK"
-        val stableCliVersion = "8.8.8+888"
-        val betaCliVersion   = "9.9.9+999"
+        val alive                  = "OK"
+        val stableCliVersion       = "8.8.8+888"
+        val betaCliVersion         = "9.9.9+999"
+        val stableNativeCliVersion = "0.1.0"
 
-        Mongo.insertApplication(Application(alive, stableCliVersion, betaCliVersion))
+        Mongo.insertApplication(
+          Application(alive, stableCliVersion, betaCliVersion, stableNativeCliVersion)
+        )
 
         whenReady(findApplication()) { maybeApp =>
           maybeApp.value.alive shouldBe alive
           maybeApp.value.stableCliVersion shouldBe stableCliVersion
           maybeApp.value.betaCliVersion shouldBe betaCliVersion
+          maybeApp.value.stableNativeCliVersion shouldBe stableNativeCliVersion
         }
       }
 
