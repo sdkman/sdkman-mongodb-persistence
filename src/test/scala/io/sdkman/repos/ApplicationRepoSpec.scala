@@ -25,11 +25,18 @@ class ApplicationRepoSpec
 
         val alive                  = "OK"
         val stableCliVersion       = "8.8.8+888"
-        val betaCliVersion         = "9.9.9+999"
         val stableNativeCliVersion = "0.1.0"
+        val betaCliVersion         = "9.9.9+999"
+        val betaNativeCliVersion   = "0.2.0"
 
         Mongo.insertApplication(
-          Application(alive, stableCliVersion, betaCliVersion, stableNativeCliVersion)
+          Application(
+            alive = alive,
+            stableCliVersion = stableCliVersion,
+            stableNativeCliVersion = stableNativeCliVersion,
+            betaCliVersion = betaCliVersion,
+            betaNativeCliVersion = betaNativeCliVersion
+          )
         )
 
         whenReady(findApplication()) { maybeApp =>
@@ -37,6 +44,7 @@ class ApplicationRepoSpec
           maybeApp.value.stableCliVersion shouldBe stableCliVersion
           maybeApp.value.betaCliVersion shouldBe betaCliVersion
           maybeApp.value.stableNativeCliVersion shouldBe stableNativeCliVersion
+          maybeApp.value.betaNativeCliVersion shouldBe betaNativeCliVersion
         }
       }
 

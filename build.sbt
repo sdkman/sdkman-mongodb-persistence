@@ -16,7 +16,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
   "com.typesafe" % "config" % "1.3.1",
-  "com.github.sdkman" % "sdkman-persistent-model" % "1.1.1",
+  "com.github.sdkman" % "sdkman-persistent-model" % "1.1.2",
   "org.scalatest" %% "scalatest" % "3.2.2" % Test,
   "org.testcontainers" % "mongodb" % "1.16.0" % Test
 )
